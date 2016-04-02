@@ -1,0 +1,212 @@
+// ConsoleApplication59.cpp: определяет точку входа для консольного приложения.
+
+#include "stdafx.h"
+#include <iostream>
+using namespace std;
+
+class Z100
+{  
+	int x;
+public:
+	Z100() {  };
+	Z100(int a)
+	{
+		x = a;
+	}
+	 
+	Z100 operator+(const Z100& obj) 
+	{
+		return x+obj.x;
+	};
+	Z100 operator*(const Z100& obj)
+	{
+		return  x*obj.x ;
+	};
+	void print() { cout << x << "\n"; };
+	void printit() { cout << x << " "; }
+		~Z100()
+		{ }
+};
+
+class Matr
+{
+	int _n;
+	int _m;
+	int l;
+	int elem;
+	Z100 **p;
+	Z100 **a;
+
+public:
+	Matr()
+	{
+		_n = 0;
+		_m = 0;
+		p = 0;
+	}
+	Matr(int a)
+	{
+		l = a;
+	}
+	Matr(int n, int m, Z100 **arr) //конструктор с параметрами
+	{
+		_n = n;
+		_m = m;
+		p = new Z100*[n];
+		for (int i = 0; i < n; i++)
+			p[i] = new Z100[m];
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				p[i][j] = arr[i][j];
+			}
+		}
+	}
+
+	Z100 operator() (int i, int j) //обращение по индексу
+	{
+		Matr object;
+		return object.p[i][j];
+	}
+	Matr operator*(Matr & matrix) //умножение двух матриц
+	{
+		Z100 **rezm = new Z100*[matrix._n];
+		for (int i = 0; i < matrix._n; i++)
+			rezm[i] = new Z100[matrix._m];
+		for (int i = 0; i < matrix._n; i++)
+		{
+			for (int j = 0; j < matrix._m; i++)
+			{
+				rezm[i][j] = 0;
+				for (int k = 0; k < matrix._n; k++)
+				{
+					rezm[i][j]=rezm[i][j]+(matrix.p[i][k] * matrix.a[k][j]);
+				}
+			}
+		}
+		Matr rez(matrix._n, matrix._m, rezm);
+		return rez;
+	}
+	void printMatr() //функция печати матрицы
+	{
+		for (int i = 0; i < _n; i++)
+		{
+
+			for (int j = 0; j < _m; j++)
+			{
+				p[i][j].printit();
+			}
+			cout << "\n";
+		}
+		cout << "\n";
+	}
+	friend Matr& operator*(Z100 mn, Matr& matrix); //дружественная функция для оператора умножения на число
+	/*~Matr() 
+	{
+		for (int i = 0; i < _n; i++) 
+		{
+			delete p[i];
+		}
+		delete []p;
+		for (int i = 0; i < _n; i++)
+		{
+			delete a[i];
+		}
+		delete[]a;
+	};*/
+};
+Matr& operator*(Z100 mn, Matr& matrix) //умножение матрицы на число
+{ 
+	Z100**arr = new Z100*[matrix._n];
+	for (int i = 0; i < matrix._n; i++)
+		arr[i] = new Z100[matrix._m];
+	for (int i = 0; i < matrix._n; i++)
+	{
+		for (int j = 0; j < matrix._m; j++)
+		{
+			arr[i][j] = mn*matrix.p[i][j];
+		};
+	}
+
+	Matr pm(matrix._n, matrix._m,arr); 
+	return pm;
+}
+
+class Mistake
+{
+	int size1;
+	int size2;
+	int x, y;
+public:
+	Mistake(int n, int m) 
+	{
+		size1 = n;
+		size2 = m;
+		try {
+			if (size1 != size2) throw;
+		}
+		catch (...) {
+			cout << "Wrong!";
+		}
+	}
+};
+class OutOfRange
+{
+	OutOfRange() {};
+};
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+	//матрицы
+	int n = 2;
+	int m = 2;
+	//первая матрица
+	Z100 **p = new Z100*[2];
+	for (int i = 0; i < 2; i++)
+	{
+		p[i] = new Z100[2];
+	};
+	p[0][0] = Z100(2);
+	p[0][1] = Z100(3);
+	p[1][0] = Z100(5);
+	p[1][1] = Z100(4);
+
+	Mistake mw(n, m);
+	Matr array(n, m, p);
+	array.printMatr();
+	Z100 k(2);
+	//умножаем на число
+ Matr rez=k*array;
+ rez.printMatr();
+//вторая матрица
+ Z100 **a= new Z100*[2];
+ for (int i = 0; i < 2; i++)
+ {
+	 a[i] = new Z100[2];
+ };
+ a[0][0] = Z100(5);
+ a[0][1] = Z100(3);
+ a[1][0] = Z100(4);
+ a[1][1] = Z100(4);
+ Matr matrix(n, m, a);
+ matrix.printMatr();
+ //умножение матриц
+ Matr umn = matrix*array;
+  umn.printMatr();
+ //вычеты
+	int a1 = 100;
+	int b = 40;
+	Z100 obj1(a1);
+	Z100 obj2(b);
+
+	Z100 s = obj1 + obj2;
+	s.print();
+	Z100 mul = obj1*obj2;
+	mul.print();
+
+
+	return 0;
+}
